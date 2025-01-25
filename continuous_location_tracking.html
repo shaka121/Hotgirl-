@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Location Tracking</title>
+</head>
+<body>
+    <h1>Continuous Location Tracking</h1>
+    <button onclick="startTracking()">Start Tracking</button>
+    <button onclick="stopTracking()">Stop Tracking</button>
+    <p id="status">Waiting for action...</p>
+
+    <script>
+        let watchId; // Variable to store the tracking ID
+
+        function startTracking() {
+            const statusElement = document.getElementById('status');
+
+            if (navigator.geolocation) {
+                watchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        // Send the location to the server
+                        fetch('https://your-server.com/save-location', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                latitude: latitude,
+                                longitude: longitude
+                            })
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            statusElement.innerHTML = "Location sent: " + data;
+                        })
+                        .catch(error => {
+                            statusElement.innerHTML = "Error sending location: " + error.message;
+                        });
+                    },
+                    (error) => {
+                        statusElement.innerHTML = "Error getting location: " + error.message;
+                    }
+                );
+            } else {
+                statusElement.innerHTML = "Geolocation is not supported by your browser.";
+            }
+        }
+
+        function stopTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId); // Stop tracking
+                document.getElementById('status').innerHTML = "Tracking stopped.";
+            }
+        }
+    </script>
+</body>
+</html>
